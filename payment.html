@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Verification — Step 2 | MAHOTSAV 2027</title>
+    <meta name="description" content="Step 2: Pay the official Mahotsav 2027 registration fee via UPI and submit your 12-digit UTR reference number for verification.">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/mahotsav-theme.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+    <!-- Site Header -->
+    <header class="site-header" id="site-header">
+        <div class="container nav-container">
+            <a href="index.html" class="brand-wrapper">
+                <img src="clg.png" alt="Vignan University Logo" class="brand-logo-img">
+                <div class="brand-divider"></div>
+                <div class="brand-titles">
+                    <span class="brand-fest-name">MAHOTSAV</span>
+                    <span class="brand-fest-sub">Payment Verification</span>
+                </div>
+            </a>
+
+            <nav>
+                <ul class="nav-menu" id="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="events.html" class="nav-link">Events</a></li>
+                    <li><a href="status.html" class="nav-link">Check Status</a></li>
+                </ul>
+            </nav>
+
+            <div class="nav-actions">
+                <div id="nav-auth-container">
+                    <a href="login.html" class="btn btn-ghost btn-sm">Login</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main style="padding-top: calc(var(--nav-height) + 2.5rem); padding-bottom: 5rem;">
+        <div class="container" style="max-width: 820px;">
+            <!-- Step Progress Indicator -->
+            <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 2.5rem;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; opacity: 0.7;">
+                        <span style="width: 32px; height: 32px; border-radius: 50%; background: #22c55e; color: #120502; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem;">✓</span>
+                        <span style="font-weight: 600; color: var(--color-text-secondary); font-size: 0.95rem;">Personal Details</span>
+                    </div>
+                    <div style="width: 50px; height: 2px; background: var(--color-amber-gold);"></div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-amber-gold); color: #120502; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem;">2</span>
+                        <span style="font-weight: 700; color: #ffffff; font-size: 0.95rem;">Payment Verification</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Two-Column Layout: QR Instructions & Form -->
+            <div style="display: grid; grid-template-columns: 1fr 1.25fr; gap: 2rem;" class="payment-grid-layout">
+                <!-- Left: Payment Instructions & QR Box -->
+                <div class="glass-card" style="padding: 2rem; display: flex; flex-direction: column; align-items: center; text-align: center;">
+                    <span style="font-size: 0.75rem; color: var(--color-amber-gold); text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">SCAN & PAY VIA ANY UPI APP</span>
+                    <h3 style="font-size: 1.3rem; margin-top: 0.3rem; margin-bottom: 0.8rem;">Official Fest UPI</h3>
+
+                    <!-- Dynamic Fee Badge -->
+                    <div style="background: rgba(245, 158, 11, 0.15); border: 1px solid var(--border-gold); padding: 0.6rem 1.4rem; border-radius: var(--radius-full); margin-bottom: 1.2rem;">
+                        <span style="font-size: 0.82rem; color: var(--color-text-secondary);">Fee Amount:</span>
+                        <strong style="font-size: 1.3rem; color: var(--color-amber-bright); margin-left: 0.4rem;" id="display-payment-fee">₹ 250</strong>
+                    </div>
+
+                    <!-- Payment QR Code Container -->
+                    <div style="background: #ffffff; padding: 12px; border-radius: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); margin-bottom: 1.2rem; width: 200px; height: 200px; display: flex; align-items: center; justify-content: center;" id="payment-qr-container">
+                        <!-- Dynamic QR code injected via QRCode.js or admin configured qrImage -->
+                    </div>
+
+                    <!-- UPI Mobile / VPA Details -->
+                    <div style="background: rgba(18, 7, 4, 0.7); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 0.75rem 1rem; width: 100%; margin-bottom: 1rem; text-align: left;">
+                        <span style="font-size: 0.72rem; color: var(--color-text-dim); text-transform: uppercase;">UPI ID / Mobile:</span>
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.2rem;">
+                            <strong style="color: #ffffff; font-size: 0.92rem;" id="display-upi-mobile">mahotsav@vignan</strong>
+                            <button type="button" class="btn btn-ghost btn-sm" onclick="copyUPI()" style="padding: 0.2rem 0.6rem; font-size: 0.78rem; color: var(--color-amber-bright);">Copy</button>
+                        </div>
+                    </div>
+
+                    <!-- Payment App Icons -->
+                    <p style="font-size: 0.75rem; color: var(--color-text-dim); line-height: 1.4;">
+                        Accepted: Google Pay, PhonePe, Paytm, BHIM, Cred, or any BHIM UPI mobile application.
+                    </p>
+                </div>
+
+                <!-- Right: UTR Verification Submission Form -->
+                <div class="glass-card" style="padding: 2.2rem 2rem;">
+                    <div style="margin-bottom: 1.5rem;">
+                        <h2 style="font-size: 1.5rem; margin-bottom: 0.3rem;">Submit Verification</h2>
+                        <p style="color: var(--color-text-secondary); font-size: 0.88rem;">
+                            After completing the payment in your UPI app, enter your 12-digit UTR / UPI Reference Number below.
+                        </p>
+                    </div>
+
+                    <div id="payment-error-box" style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; padding: 0.85rem 1rem; border-radius: var(--radius-md); font-size: 0.88rem; margin-bottom: 1.2rem;"></div>
+
+                    <form id="payment-form" novalidate>
+                        <!-- Participant Summary -->
+                        <div style="background: rgba(30, 13, 8, 0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 0.9rem 1.2rem; margin-bottom: 1.4rem;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.3rem;">
+                                <span style="color: var(--color-text-dim);">Participant:</span>
+                                <strong style="color: #ffffff;" id="summary-participant-name">Loading...</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                                <span style="color: var(--color-text-dim);">Category:</span>
+                                <span style="color: var(--color-amber-gold); font-weight: 700;" id="summary-participant-category">Culturals</span>
+                            </div>
+                        </div>
+
+                        <!-- Transfer Date -->
+                        <div class="form-group">
+                            <label class="form-label" for="pay-date">Transfer / Payment Date <span class="required">*</span></label>
+                            <input type="date" id="pay-date" class="form-control" required>
+                        </div>
+
+                        <!-- UTR Number (Unique Constraint Enforced) -->
+                        <div class="form-group">
+                            <label class="form-label" for="pay-utr">12-Digit UTR / UPI Reference Number <span class="required">*</span></label>
+                            <input type="text" id="pay-utr" class="form-control" placeholder="e.g. 428190284719" maxlength="22" required style="font-family: monospace; font-size: 1.05rem; letter-spacing: 1px;">
+                            <span class="form-hint">Found in your payment app transaction receipt (also called Ref No. / Transaction ID)</span>
+                        </div>
+
+                        <!-- Verification Guidelines -->
+                        <div style="background: rgba(245, 158, 11, 0.08); border-left: 3px solid var(--color-amber-gold); padding: 0.8rem 1rem; border-radius: 4px; margin-bottom: 1.8rem; font-size: 0.8rem; color: var(--color-text-secondary); line-height: 1.5;">
+                            ⚠️ <strong>Important:</strong> Each UTR can only be submitted once. Duplicate submissions will automatically be flagged and rejected by the database.
+                        </div>
+
+                        <button type="submit" class="btn btn-gold btn-lg btn-block pulse-glow" id="btn-submit-payment">
+                            Submit Payment For Verification &rarr;
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/music.js"></script>
+
+    <script>
+        let currentParticipantId = null;
+        let chosenFee = 250;
+        let chosenCategory = "Culturals";
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            // Set today's date as default
+            const dateInput = document.getElementById("pay-date");
+            if (dateInput) {
+                dateInput.value = new Date().toISOString().split("T")[0];
+            }
+
+            // Read participant ID from URL or sessionStorage
+            const urlParams = new URLSearchParams(window.location.search);
+            currentParticipantId = urlParams.get("id");
+            const catParam = urlParams.get("category");
+
+            const pendingDataStr = sessionStorage.getItem("mahotsav_pending_reg");
+            let pendingData = null;
+            if (pendingDataStr) {
+                try { pendingData = JSON.parse(pendingDataStr); } catch (e) {}
+            }
+
+            if (!currentParticipantId && pendingData && pendingData.participant_id) {
+                currentParticipantId = pendingData.participant_id;
+            }
+
+            if (catParam) {
+                chosenCategory = catParam;
+            } else if (pendingData && pendingData.category) {
+                chosenCategory = pendingData.category;
+            }
+
+            // Determine fee based on poster
+            if (chosenCategory === "Sports (Men)") {
+                chosenFee = MAHOTSAV_CONFIG.fees.sportsMen;
+            } else if (chosenCategory === "Sports (Women)") {
+                chosenFee = MAHOTSAV_CONFIG.fees.sportsWomen;
+            } else {
+                chosenFee = MAHOTSAV_CONFIG.fees.culturals;
+            }
+
+            document.getElementById("display-payment-fee").textContent = `₹ ${chosenFee}`;
+            document.getElementById("summary-participant-category").textContent = chosenCategory;
+            document.getElementById("summary-participant-name").textContent = pendingData?.name || "Participant";
+
+            // Load Payment Settings (QR Image & UPI Mobile)
+            const settings = await MahotsavService.getPaymentSettings();
+            const upiMobile = settings.upiMobile || window.paymentSettings.upiMobile;
+            const upiDisplay = (!upiMobile || upiMobile.includes("PASTE_")) ? "9032080405@upi" : upiMobile;
+            document.getElementById("display-upi-mobile").textContent = upiDisplay;
+
+            // Render QR Code
+            renderPaymentQR(settings.qrImage, upiDisplay, chosenFee);
+        });
+
+        function renderPaymentQR(qrImage, upiVpa, amount) {
+            const container = document.getElementById("payment-qr-container");
+            if (!container) return;
+            container.innerHTML = "";
+
+            if (qrImage && !qrImage.includes("PASTE_") && qrImage.startsWith("http")) {
+                container.innerHTML = `<img src="${qrImage}" alt="Payment QR Code" style="width: 100%; height: 100%; object-fit: contain;">`;
+            } else if (window.QRCode) {
+                // Generate authentic UPI payment QR string
+                // Format: upi://pay?pa={upi}&pn=Vignan+Mahotsav&am={amount}&cu=INR
+                const upiString = `upi://pay?pa=${encodeURIComponent(upiVpa)}&pn=Vignan%20Mahotsav%202027&am=${amount}&cu=INR`;
+                new window.QRCode(container, {
+                    text: upiString,
+                    width: 176,
+                    height: 176,
+                    colorDark: "#120502",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+            } else {
+                container.innerHTML = `<img src="details.jpeg" alt="QR Code" style="width: 100%; height: 100%; object-fit: cover;">`;
+            }
+        }
+
+        function copyUPI() {
+            const upiText = document.getElementById("display-upi-mobile").textContent;
+            navigator.clipboard.writeText(upiText).then(() => {
+                showToast("UPI ID copied to clipboard!", "success");
+            });
+        }
+
+        // Handle Payment Verification Form Submission
+        const form = document.getElementById("payment-form");
+        const errBox = document.getElementById("payment-error-box");
+        const submitBtn = document.getElementById("btn-submit-payment");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            errBox.style.display = "none";
+
+            const utr = document.getElementById("pay-utr").value.trim().toUpperCase();
+            const payDate = document.getElementById("pay-date").value;
+
+            if (!utr || utr.length < 6) {
+                errBox.textContent = "Please enter a valid 12-digit UPI / UTR Transaction Reference Number.";
+                errBox.style.display = "block";
+                return;
+            }
+
+            if (!payDate) {
+                errBox.textContent = "Please select the payment date.";
+                errBox.style.display = "block";
+                return;
+            }
+
+            if (!currentParticipantId) {
+                errBox.textContent = "Registration session not found. Please start registration from Step 1.";
+                errBox.style.display = "block";
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<span>Verifying & Submitting...</span>`;
+
+            try {
+                await MahotsavService.submitPayment(currentParticipantId, {
+                    amount: chosenFee,
+                    category: chosenCategory,
+                    payment_date: payDate,
+                    utr_number: utr
+                });
+
+                showToast("Payment submitted successfully! Awaiting admin verification.", "success");
+
+                setTimeout(() => {
+                    window.location.href = `status.html?id=${currentParticipantId}`;
+                }, 1200);
+            } catch (err) {
+                console.error("Payment submission error:", err);
+                errBox.textContent = err.message || "Failed to submit payment. Duplicate UTR detected.";
+                errBox.style.display = "block";
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `Submit Payment For Verification &rarr;`;
+            }
+        });
+    </script>
+</body>
+</html>

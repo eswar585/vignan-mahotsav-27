@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrative Suite | MAHOTSAV 2027</title>
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/mahotsav-theme.css">
+    <link rel="stylesheet" href="css/components.css">
+
+    <style>
+        .admin-layout {
+            display: flex;
+            min-height: calc(100vh - var(--nav-height));
+        }
+        .admin-sidebar {
+            width: 250px;
+            background: rgba(14, 6, 3, 0.95);
+            border-right: 1px solid var(--border-glass);
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            flex-shrink: 0;
+        }
+        .admin-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.65rem 1rem;
+            color: var(--color-text-secondary);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            border: 1px solid transparent;
+            cursor: pointer;
+            background: none;
+            text-align: left;
+            width: 100%;
+        }
+        .admin-nav-item:hover, .admin-nav-item.active {
+            color: #ffffff;
+            background: rgba(245, 158, 11, 0.15);
+            border-color: var(--border-gold);
+        }
+        .admin-content {
+            flex-grow: 1;
+            padding: 2rem;
+            max-width: 1300px;
+            overflow-x: hidden;
+        }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--border-gold);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            position: relative;
+        }
+        .stat-val {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.1;
+            margin-top: 0.3rem;
+        }
+        .stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--color-text-dim);
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+        .admin-tab-pane {
+            display: none;
+        }
+        .admin-tab-pane.active {
+            display: block;
+        }
+        @media (max-width: 900px) {
+            .admin-layout { flex-direction: column; }
+            .admin-sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-glass); flex-direction: row; overflow-x: auto; }
+            .admin-nav-item { white-space: nowrap; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Site Header -->
+    <header class="site-header" id="site-header">
+        <div class="container nav-container" style="max-width: 100%;">
+            <a href="index.html" class="brand-wrapper">
+                <img src="clg.png" alt="Vignan University Logo" class="brand-logo-img">
+                <div class="brand-divider"></div>
+                <div class="brand-titles">
+                    <span class="brand-fest-name">MAHOTSAV</span>
+                    <span class="brand-fest-sub" style="color: #ef4444;">Admin Control Suite</span>
+                </div>
+            </a>
+
+            <div class="nav-actions">
+                <span class="badge-role admin">ADMINISTRATOR</span>
+                <a href="index.html" class="btn btn-ghost btn-sm">Public Site</a>
+                <button onclick="MahotsavService.logout()" class="btn btn-outline-danger btn-sm">Sign Out</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="admin-layout" style="margin-top: var(--nav-height);">
+        <!-- Admin Navigation Sidebar -->
+        <aside class="admin-sidebar">
+            <button class="admin-nav-item active" onclick="switchAdminTab('overview')">
+                📊 Overview
+            </button>
+            <button class="admin-nav-item" onclick="switchAdminTab('participants')">
+                👥 Participants & Approval
+            </button>
+            <button class="admin-nav-item" onclick="switchAdminTab('payments')">
+                💳 Payments Verification
+            </button>
+            <button class="admin-nav-item" onclick="switchAdminTab('scanner')">
+                📷 Barcode / QR Scanner
+            </button>
+            <button class="admin-nav-item" onclick="switchAdminTab('events')">
+                🎪 Events Management
+            </button>
+            <button class="admin-nav-item" onclick="switchAdminTab('venues')">
+                📍 Venues
+            </button>
+            <button class="admin-nav-item" onclick="switchAdminTab('videos')">
+                🎬 Videos (Day 1/2/3)
+            </button>
+            <button class="admin-nav-item" onclick="switchAdminTab('payment-settings')">
+                ⚙️ Payment Settings
+            </button>
+            <button class="admin-nav-item" onclick="switchAdminTab('notifications')">
+                📢 Announcements
+            </button>
+            <button class="admin-nav-item" onclick="switchAdminTab('supabase')">
+                ⚡ Supabase Engine
+            </button>
+        </aside>
+
+        <!-- Main Admin Content Area -->
+        <main class="admin-content">
+            <!-- TAB 1: OVERVIEW -->
+            <section id="tab-overview" class="admin-tab-pane active">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h1 style="font-size: 1.8rem; color: #ffffff;">Festival Administration Dashboard</h1>
+                        <p style="color: var(--color-text-secondary); font-size: 0.9rem;">
+                            Live monitoring of registrations, payment approvals, entry gates, and schedule.
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 0.75rem;">
+                        <button class="btn btn-gold btn-sm" onclick="switchAdminTab('scanner')">📷 Gate Scanner</button>
+                        <button class="btn btn-outline-gold btn-sm" onclick="exportParticipantsCSV()">📥 Export CSV</button>
+                    </div>
+                </div>
+
+                <!-- Statistics Grid (Requirement 28) -->
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">Total Registrations</span>
+                        <div class="stat-val" id="stat-total-reg">0</div>
+                    </div>
+                    <div class="stat-card" style="border-color: var(--color-amber-gold);">
+                        <span class="stat-label">Pending Approval</span>
+                        <div class="stat-val" id="stat-pending-reg" style="color: var(--color-amber-bright);">0</div>
+                    </div>
+                    <div class="stat-card" style="border-color: #22c55e;">
+                        <span class="stat-label">Approved Participants</span>
+                        <div class="stat-val" id="stat-approved-reg" style="color: #4ade80;">0</div>
+                    </div>
+                    <div class="stat-card" style="border-color: #ef4444;">
+                        <span class="stat-label">Declined Requests</span>
+                        <div class="stat-val" id="stat-declined-reg" style="color: #f87171;">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Total Payments</span>
+                        <div class="stat-val" id="stat-total-pay">0</div>
+                    </div>
+                    <div class="stat-card" style="border-color: #22c55e;">
+                        <span class="stat-label">Verified Payments</span>
+                        <div class="stat-val" id="stat-verified-pay" style="color: #4ade80;">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Event Registrations</span>
+                        <div class="stat-val" id="stat-event-regs">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Total Competitions</span>
+                        <div class="stat-val" id="stat-total-events">10</div>
+                    </div>
+                </div>
+
+                <!-- Quick Action Panels -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;" class="overview-two-col">
+                    <div class="glass-card" style="padding: 1.5rem;">
+                        <h3 style="font-size: 1.15rem; margin-bottom: 0.8rem;">Recent Registration Queue</h3>
+                        <div id="overview-recent-table" style="font-size: 0.85rem;">
+                            <!-- Injected by JS -->
+                        </div>
+                        <button class="btn btn-ghost btn-sm" onclick="switchAdminTab('participants')" style="margin-top: 1rem; color: var(--color-amber-bright);">View All Participants &rarr;</button>
+                    </div>
+
+                    <div class="glass-card" style="padding: 1.5rem;">
+                        <h3 style="font-size: 1.15rem; margin-bottom: 0.8rem;">Quick Broadcast Announcement</h3>
+                        <form id="overview-broadcast-form">
+                            <div class="form-group">
+                                <input type="text" id="quick-broadcast-title" class="form-control" placeholder="Announcement Headline" required>
+                            </div>
+                            <div class="form-group">
+                                <textarea id="quick-broadcast-msg" class="form-control" rows="2" placeholder="Message details to notify all fest participants" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-gold btn-sm">Publish Announcement</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: PARTICIPANTS & APPROVAL (Requirement 16, 17, 29, 30) -->
+            <section id="tab-participants" class="admin-tab-pane">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h2 style="font-size: 1.6rem; color: #ffffff;">Participants Management</h2>
+                        <p style="color: var(--color-text-secondary); font-size: 0.88rem;">
+                            Review submissions, verify collegiate credentials, approve participants, and auto-generate MHID.
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 0.75rem;">
+                        <button class="btn btn-gold btn-sm" onclick="exportParticipantsCSV()">📥 Export All to CSV</button>
+                    </div>
+                </div>
+
+                <!-- Search and Filters (Requirement 29) -->
+                <div class="glass-card" style="padding: 1rem 1.25rem; margin-bottom: 1.5rem;">
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+                        <input type="text" id="part-search-input" class="form-control" placeholder="Search by MHID, Name, Email, Phone, College, College ID, or UTR..." style="flex-grow: 1; min-width: 280px;">
+                        
+                        <select id="part-status-filter" class="form-control" style="width: auto;">
+                            <option value="all">All Statuses</option>
+                            <option value="pending">Pending Approval</option>
+                            <option value="approved">Approved</option>
+                            <option value="declined">Declined</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Participants Table -->
+                <div class="table-responsive">
+                    <table class="custom-table" id="participants-table">
+                        <thead>
+                            <tr>
+                                <th>MHID / Name</th>
+                                <th>College & Course</th>
+                                <th>Contact (Email & Phone)</th>
+                                <th>College ID</th>
+                                <th>Category</th>
+                                <th>Payment UTR</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="participants-table-body">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB 3: PAYMENTS VERIFICATION (Requirement 14, 16) -->
+            <section id="tab-payments" class="admin-tab-pane">
+                <div style="margin-bottom: 1.5rem;">
+                    <h2 style="font-size: 1.6rem; color: #ffffff;">Payment Verification Queue</h2>
+                    <p style="color: var(--color-text-secondary); font-size: 0.88rem;">
+                        Verify participant UTR / UPI reference numbers against bank statements.
+                    </p>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Participant</th>
+                                <th>Amount</th>
+                                <th>Category</th>
+                                <th>Payment Date</th>
+                                <th>UTR / UPI Ref Number</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payments-table-body">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB 4: BARCODE & QR SCANNER (Requirement 20, 21) -->
+            <section id="tab-scanner" class="admin-tab-pane">
+                <div style="margin-bottom: 1.5rem;">
+                    <h2 style="font-size: 1.6rem; color: #ffffff;">Gate Entry & Barcode Scanner</h2>
+                    <p style="color: var(--color-text-secondary); font-size: 0.88rem;">
+                        Scan participant digital ID cards using device camera or verify via manual MHID lookup.
+                    </p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 2rem;" class="scanner-grid-layout">
+                    <!-- Scanner Camera Feed -->
+                    <div class="glass-card" style="padding: 1.5rem; display: flex; flex-direction: column; align-items: center; text-align: center;">
+                        <div id="qr-reader" style="width: 100%; max-width: 320px; border-radius: var(--radius-md); overflow: hidden; background: #000; margin-bottom: 1rem;"></div>
+                        
+                        <button class="btn btn-gold btn-block pulse-glow" id="btn-toggle-camera" onclick="toggleCameraScanner()">
+                            Start Camera Scanner
+                        </button>
+
+                        <div style="margin-top: 1.5rem; width: 100%; text-align: left;">
+                            <label class="form-label">Manual MHID or Barcode Entry:</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="text" id="scanner-manual-input" class="form-control" placeholder="e.g. MH270001">
+                                <button class="btn btn-outline-gold" onclick="manualScannerLookup()">Verify</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Verified Participant Badge Display -->
+                    <div class="glass-card" style="padding: 2rem;" id="scanner-result-card">
+                        <div style="text-align: center; color: var(--color-text-dim); padding: 2rem 0;">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 0.8rem; opacity: 0.5;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                            <p>Ready to scan. Point camera at participant ID barcode or enter MHID manually.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: EVENTS MANAGEMENT (Requirement 25) -->
+            <section id="tab-events" class="admin-tab-pane">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <div>
+                        <h2 style="font-size: 1.6rem; color: #ffffff;">Events Management</h2>
+                        <p style="color: var(--color-text-secondary); font-size: 0.88rem;">Add, edit, publish, or modify rules and schedules.</p>
+                    </div>
+                    <button class="btn btn-gold btn-sm" onclick="openAddEventModal()">+ Add New Event</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Title & Category</th>
+                                <th>Venue</th>
+                                <th>Schedule</th>
+                                <th>Prize Money</th>
+                                <th>Team Size</th>
+                                <th>Published</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-events-table-body">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB 6: VENUES MANAGEMENT (Requirement 26) -->
+            <section id="tab-venues" class="admin-tab-pane">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <div>
+                        <h2 style="font-size: 1.6rem; color: #ffffff;">Venues & Campus Locations</h2>
+                        <p style="color: var(--color-text-secondary); font-size: 0.88rem;">Manage venue details, schedules, and Google Maps links.</p>
+                    </div>
+                    <button class="btn btn-gold btn-sm" onclick="openAddVenueModal()">+ Add Venue</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Venue Name</th>
+                                <th>Location</th>
+                                <th>Date & Time</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-venues-table-body">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB 7: PREVIOUS YEAR VIDEO MANAGEMENT (Requirement 7, 8, 45) -->
+            <section id="tab-videos" class="admin-tab-pane">
+                <div style="margin-bottom: 1.5rem;">
+                    <h2 style="font-size: 1.6rem; color: #ffffff;">Previous Year Video Management</h2>
+                    <p style="color: var(--color-text-secondary); font-size: 0.88rem;">
+                        Configure YouTube URLs for Day 1, Day 2, and Day 3 fest highlights. Automatically synchronized with Supabase.
+                    </p>
+                </div>
+
+                <div class="glass-card" style="max-width: 780px; padding: 2rem;">
+                    <form id="admin-videos-form">
+                        <div class="form-group">
+                            <label class="form-label" for="admin-video-day1">Day 1 YouTube URL</label>
+                            <input type="text" id="admin-video-day1" class="form-control" placeholder="https://www.youtube.com/watch?v=..." required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="admin-video-day2">Day 2 YouTube URL</label>
+                            <input type="text" id="admin-video-day2" class="form-control" placeholder="https://www.youtube.com/watch?v=..." required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="admin-video-day3">Day 3 YouTube URL</label>
+                            <input type="text" id="admin-video-day3" class="form-control" placeholder="https://www.youtube.com/watch?v=..." required>
+                        </div>
+
+                        <button type="submit" class="btn btn-gold btn-lg pulse-glow" id="btn-save-videos">
+                            SAVE VIDEO LINKS
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- TAB 8: PAYMENT SETTINGS (Requirement 13, 46) -->
+            <section id="tab-payment-settings" class="admin-tab-pane">
+                <div style="margin-bottom: 1.5rem;">
+                    <h2 style="font-size: 1.6rem; color: #ffffff;">Payment Configuration Settings</h2>
+                    <p style="color: var(--color-text-secondary); font-size: 0.88rem;">
+                        Manage official QR code, UPI mobile number, registration fees, and bank instructions.
+                    </p>
+                </div>
+
+                <div class="glass-card" style="max-width: 780px; padding: 2rem;">
+                    <form id="admin-payment-settings-form">
+                        <div class="form-group">
+                            <label class="form-label" for="admin-qr-image">Payment QR Image URL</label>
+                            <input type="text" id="admin-qr-image" class="form-control" placeholder="PASTE_PAYMENT_QR_IMAGE_HERE or image URL">
+                            <span class="form-hint">Leave as placeholder or specify custom hosted QR code URL. If blank, a dynamic UPI QR will be generated automatically.</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="admin-upi-mobile">Payment Mobile / UPI ID</label>
+                            <input type="text" id="admin-upi-mobile" class="form-control" placeholder="PASTE_PAYMENT_UPI_MOBILE_NUMBER_HERE or UPI ID" required>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label class="form-label">Culturals Fee (₹)</label>
+                                <input type="number" id="admin-fee-culturals" class="form-control" value="250" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Sports Men Fee (₹)</label>
+                                <input type="number" id="admin-fee-sports-men" class="form-control" value="350" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Sports Women Fee (₹)</label>
+                                <input type="number" id="admin-fee-sports-women" class="form-control" value="250" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-gold btn-lg pulse-glow" id="btn-save-payment-settings">
+                            SAVE PAYMENT SETTINGS
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- TAB 9: ANNOUNCEMENTS & NOTIFICATIONS (Requirement 27) -->
+            <section id="tab-notifications" class="admin-tab-pane">
+                <div style="margin-bottom: 1.5rem;">
+                    <h2 style="font-size: 1.6rem; color: #ffffff;">Announcements & Broadcasts</h2>
+                    <p style="color: var(--color-text-secondary); font-size: 0.88rem;">
+                        Send real-time alerts to participant dashboards and the homepage ticker.
+                    </p>
+                </div>
+
+                <div class="glass-card" style="max-width: 780px; padding: 2rem; margin-bottom: 2rem;">
+                    <form id="admin-broadcast-form">
+                        <div class="form-group">
+                            <label class="form-label">Notification Title</label>
+                            <input type="text" id="notif-title-input" class="form-control" placeholder="e.g. Schedule Update for War of Bands" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Message Content</label>
+                            <textarea id="notif-message-input" class="form-control" rows="3" placeholder="Provide complete update details..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Alert Severity</label>
+                            <select id="notif-type-select" class="form-control" style="width: auto;">
+                                <option value="info">Information (Blue)</option>
+                                <option value="success">Success (Green)</option>
+                                <option value="warning">Warning (Amber)</option>
+                                <option value="urgent">Urgent Notice (Red)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-gold">Broadcast to All Participants</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- TAB 10: SUPABASE SETUP & ENGINE -->
+            <section id="tab-supabase" class="admin-tab-pane">
+                <div style="margin-bottom: 1.5rem;">
+                    <h2 style="font-size: 1.6rem; color: #ffffff;">Supabase Backend Diagnostics & Migration</h2>
+                    <p style="color: var(--color-text-secondary); font-size: 0.88rem;">
+                        View database schema, configure live Supabase URL, and verify RLS security.
+                    </p>
+                </div>
+
+                <div class="glass-card" style="padding: 2rem; margin-bottom: 2rem;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+                        <div>
+                            <strong style="color: #ffffff; font-size: 1.1rem; display: block;">Database Connection Status</strong>
+                            <span id="supabase-status-pill" class="badge-status pending">Detecting...</span>
+                        </div>
+                        <a href="supabase_schema.sql" download class="btn btn-outline-gold btn-sm">Download schema.sql</a>
+                    </div>
+
+                    <p style="color: var(--color-text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.5rem;">
+                        The full production SQL schema is generated in <code>supabase_schema.sql</code>. To link your remote Supabase project:
+                        <br>1. Paste your <strong>Project URL</strong> and <strong>Anon Public Key</strong> into <code>js/supabase-config.js</code>.
+                        <br>2. Run the <code>supabase_schema.sql</code> script in your Supabase SQL Editor.
+                    </p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Decline Modal -->
+    <div class="modal-overlay" id="decline-modal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title">Decline Registration</h3>
+                <button class="modal-close-btn" onclick="closeModal('decline-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="decline-participant-id">
+                <p style="color: var(--color-text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+                    Provide a specific reason for declining this applicant. This reason will be displayed on their status tracking page.
+                </p>
+                <div class="form-group">
+                    <label class="form-label">Decline Reason</label>
+                    <textarea id="decline-reason-text" class="form-control" rows="3" placeholder="e.g. UTR number not found in bank records or invalid ID card photo."></textarea>
+                </div>
+                <button class="btn btn-outline-danger btn-block" onclick="confirmDecline()">Confirm Decline</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/barcode-scanner.js"></script>
+    <script src="js/music.js"></script>
+
+    <script>
+        let allParticipants = [];
+        let scannerInstance = null;
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const adminUser = AuthGuard.requireAdmin();
+            if (!adminUser) return;
+
+            // Initialize scanner
+            scannerInstance = new MahotsavAdminScanner((scannedMHID) => {
+                showToast(`Scanned: ${scannedMHID}`, "info");
+                loadScannedParticipant(scannedMHID);
+            });
+
+            await refreshAdminData();
+            loadSettingsInputs();
+
+            // Setup search listener for participants
+            document.getElementById("part-search-input")?.addEventListener("input", filterParticipantsTable);
+            document.getElementById("part-status-filter")?.addEventListener("change", filterParticipantsTable);
+
+            // Check Supabase status
+            checkSupabaseStatus();
+        });
+
+        function switchAdminTab(tabName) {
+            document.querySelectorAll(".admin-tab-pane").forEach(p => p.classList.remove("active"));
+            document.querySelectorAll(".admin-nav-item").forEach(b => b.classList.remove("active"));
+
+            const targetPane = document.getElementById(`tab-${tabName}`);
+            if (targetPane) targetPane.classList.add("active");
+
+            // Highlight button
+            const buttons = document.querySelectorAll(".admin-sidebar .admin-nav-item");
+            buttons.forEach(btn => {
+                if (btn.getAttribute("onclick")?.includes(tabName)) {
+                    btn.classList.add("active");
+                }
+            });
+        }
+
+        async function refreshAdminData() {
+            try {
+                allParticipants = await MahotsavService.getAllParticipants();
+                renderStats();
+                renderParticipantsTable(allParticipants);
+                renderPaymentsTable(allParticipants);
+                renderOverviewRecentTable();
+                await renderAdminEvents();
+                await renderAdminVenues();
+            } catch (err) {
+                console.error("Error refreshing admin data:", err);
+            }
+        }
+
+        function renderStats() {
+            const total = allParticipants.length;
+            const pending = allParticipants.filter(p => p.status === "pending").length;
+            const approved = allParticipants.filter(p => p.status === "approved").length;
+            const declined = allParticipants.filter(p => p.status === "declined").length;
+
+            let totalPayments = 0;
+            let verifiedPayments = 0;
+            let eventRegCount = 0;
+
+            allParticipants.forEach(p => {
+                if (p.payments && p.payments.length > 0) {
+                    totalPayments += p.payments.length;
+                    verifiedPayments += p.payments.filter(pay => pay.payment_status === "verified").length;
+                }
+                if (p.event_registrations) {
+                    eventRegCount += p.event_registrations.length;
+                }
+            });
+
+            document.getElementById("stat-total-reg").textContent = total;
+            document.getElementById("stat-pending-reg").textContent = pending;
+            document.getElementById("stat-approved-reg").textContent = approved;
+            document.getElementById("stat-declined-reg").textContent = declined;
+            document.getElementById("stat-total-pay").textContent = totalPayments;
+            document.getElementById("stat-verified-pay").textContent = verifiedPayments;
+            document.getElementById("stat-event-regs").textContent = eventRegCount;
+        }
+
+        function renderParticipantsTable(list) {
+            const tbody = document.getElementById("participants-table-body");
+            if (!tbody) return;
+
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 2rem;">No participants found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = list.map(p => {
+                const pay = (p.payments && p.payments.length > 0) ? p.payments[0] : null;
+                const utr = pay ? pay.utr_number : '<span style="color: #ef4444;">Not Paid</span>';
+                
+                return `
+                    <tr>
+                        <td>
+                            <strong style="color: var(--color-amber-bright); font-family: monospace;">${p.mhid || 'Pending MHID'}</strong>
+                            <div style="color: #ffffff; font-weight: 600;">${p.name}</div>
+                        </td>
+                        <td>
+                            <div>${p.college_name}</div>
+                            <small style="color: var(--color-text-dim);">${p.course} (${p.studying_year})</small>
+                        </td>
+                        <td>
+                            <div>${p.email}</div>
+                            <small style="color: var(--color-text-muted);">${p.phone}</small>
+                        </td>
+                        <td style="font-family: monospace;">${p.college_id}</td>
+                        <td><span style="color: var(--color-amber-gold); font-weight: 600;">${p.category || 'Culturals'}</span></td>
+                        <td><span style="font-family: monospace; font-size: 0.85rem;">${utr}</span></td>
+                        <td><span class="badge-status ${p.status}">${p.status.toUpperCase()}</span></td>
+                        <td>
+                            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                                ${p.status !== 'approved' ? `
+                                    <button class="btn btn-gold btn-sm" onclick="approveParticipant('${p.id}')" title="Approve and generate MHID">Approve</button>
+                                ` : `
+                                    <a href="id-card.html?mhid=${p.mhid}" target="_blank" class="btn btn-outline-gold btn-sm" title="View Digital ID Card">Pass</a>
+                                `}
+                                ${p.status !== 'declined' ? `
+                                    <button class="btn btn-outline-danger btn-sm" onclick="openDeclineModal('${p.id}')" title="Decline">Decline</button>
+                                ` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        function filterParticipantsTable() {
+            const query = document.getElementById("part-search-input").value.toLowerCase().trim();
+            const statusFilter = document.getElementById("part-status-filter").value;
+
+            const filtered = allParticipants.filter(p => {
+                const matchStatus = (statusFilter === "all") || (p.status === statusFilter);
+                
+                const utr = (p.payments && p.payments[0]) ? p.payments[0].utr_number.toLowerCase() : "";
+                const matchQuery = !query ||
+                    p.name.toLowerCase().includes(query) ||
+                    p.email.toLowerCase().includes(query) ||
+                    p.phone.includes(query) ||
+                    p.college_name.toLowerCase().includes(query) ||
+                    p.college_id.toLowerCase().includes(query) ||
+                    (p.mhid && p.mhid.toLowerCase().includes(query)) ||
+                    utr.includes(query);
+
+                return matchStatus && matchQuery;
+            });
+
+            renderParticipantsTable(filtered);
+        }
+
+        async function approveParticipant(participantId) {
+            if (!confirm("Confirm approval of this participant? A unique MHID will be assigned immediately.")) return;
+
+            try {
+                const updated = await MahotsavService.approveParticipant(participantId, "admin");
+                showToast(`Approved! Unique ID generated: ${updated.mhid}`, "success");
+                await refreshAdminData();
+            } catch (err) {
+                console.error("Approve error:", err);
+                showToast(err.message || "Failed to approve participant.", "error");
+            }
+        }
+
+        function openDeclineModal(participantId) {
+            document.getElementById("decline-participant-id").value = participantId;
+            document.getElementById("decline-modal").classList.add("active");
+        }
+
+        async function confirmDecline() {
+            const participantId = document.getElementById("decline-participant-id").value;
+            const reason = document.getElementById("decline-reason-text").value.trim();
+
+            try {
+                await MahotsavService.declineParticipant(participantId, reason, "admin");
+                closeModal("decline-modal");
+                showToast("Participant registration marked as declined.", "info");
+                await refreshAdminData();
+            } catch (err) {
+                showToast(err.message || "Failed to decline participant.", "error");
+            }
+        }
+
+        function renderPaymentsTable(list) {
+            const tbody = document.getElementById("payments-table-body");
+            if (!tbody) return;
+
+            const paymentsList = [];
+            list.forEach(p => {
+                if (p.payments) {
+                    p.payments.forEach(pay => {
+                        paymentsList.push({ ...pay, participant: p });
+                    });
+                }
+            });
+
+            if (paymentsList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 2rem;">No payments submitted.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = paymentsList.map(pay => `
+                <tr>
+                    <td>
+                        <strong style="color: #ffffff;">${pay.participant?.name || 'Unknown'}</strong>
+                        <div style="font-size: 0.78rem; color: var(--color-text-dim);">${pay.participant?.college_name}</div>
+                    </td>
+                    <td><strong style="color: var(--color-amber-bright);">₹ ${pay.amount}</strong></td>
+                    <td>${pay.category}</td>
+                    <td>${pay.payment_date}</td>
+                    <td style="font-family: monospace; font-size: 0.95rem; color: #ffffff;">${pay.utr_number}</td>
+                    <td><span class="badge-status ${pay.payment_status === 'verified' ? 'approved' : 'pending'}">${pay.payment_status.toUpperCase()}</span></td>
+                    <td>
+                        ${pay.payment_status !== 'verified' ? `
+                            <button class="btn btn-gold btn-sm" onclick="approveParticipant('${pay.participant_id}')">Verify & Approve</button>
+                        ` : '<span style="color: #4ade80;">Verified ✓</span>'}
+                    </td>
+                </tr>
+            `).join("");
+        }
+
+        function renderOverviewRecentTable() {
+            const container = document.getElementById("overview-recent-table");
+            if (!container) return;
+
+            const recent = allParticipants.slice(0, 5);
+            container.innerHTML = recent.map(p => `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-glass);">
+                    <div>
+                        <strong style="color: #ffffff;">${p.name}</strong>
+                        <div style="font-size: 0.75rem; color: var(--color-text-dim);">${p.college_name}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="badge-status ${p.status}" style="font-size: 0.7rem;">${p.status.toUpperCase()}</span>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        // Camera Scanner Controls
+        async function toggleCameraScanner() {
+            if (scannerInstance) {
+                await scannerInstance.toggleCamera("qr-reader");
+            }
+        }
+
+        async function manualScannerLookup() {
+            const input = document.getElementById("scanner-manual-input").value.trim();
+            if (input) {
+                await loadScannedParticipant(input);
+            }
+        }
+
+        async function loadScannedParticipant(query) {
+            const resultCard = document.getElementById("scanner-result-card");
+            resultCard.innerHTML = `<div style="text-align: center; padding: 2rem;">Verifying identifier...</div>`;
+
+            try {
+                const p = await MahotsavService.getParticipantStatus(query);
+                if (!p) {
+                    resultCard.innerHTML = `
+                        <div style="text-align: center; padding: 2rem; border: 1px solid #ef4444; border-radius: var(--radius-md);">
+                            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">❌</div>
+                            <h3 style="color: #f87171;">Invalid or Unregistered ID</h3>
+                            <p style="color: var(--color-text-secondary); font-size: 0.9rem;">No record found for "${query}". Access Denied.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const pay = (p.payments && p.payments[0]) ? p.payments[0] : null;
+
+                resultCard.innerHTML = `
+                    <div style="border: 2px solid ${p.status === 'approved' ? '#22c55e' : '#f59e0b'}; border-radius: var(--radius-md); padding: 1.5rem; background: rgba(18, 7, 4, 0.7);">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                            <div>
+                                <span class="badge-status ${p.status}">${p.status.toUpperCase()}</span>
+                                <h2 style="font-size: 1.6rem; color: #ffffff; margin-top: 0.3rem;">${p.name}</h2>
+                                <span style="color: var(--color-text-secondary); font-size: 0.9rem;">${p.college_name}</span>
+                            </div>
+                            <div style="font-family: var(--font-accent); font-size: 1.4rem; font-weight: 800; color: var(--color-amber-bright);">
+                                ${p.mhid || 'NO MHID'}
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; font-size: 0.85rem; background: rgba(30, 13, 8, 0.6); padding: 1rem; border-radius: 8px; margin-bottom: 1.2rem;">
+                            <div>College ID: <strong style="color: #ffffff;">${p.college_id}</strong></div>
+                            <div>Course: <strong style="color: #ffffff;">${p.course} (${p.studying_year})</strong></div>
+                            <div>Category: <strong style="color: var(--color-amber-gold);">${p.category}</strong></div>
+                            <div>Payment: <strong style="color: ${pay?.payment_status === 'verified' ? '#4ade80' : '#f59e0b'};">${pay ? pay.payment_status.toUpperCase() : 'None'}</strong></div>
+                        </div>
+
+                        <div style="display: flex; gap: 0.75rem;">
+                            <button class="btn btn-gold btn-sm" onclick="showToast('Gate Check-In Approved for ${p.name}!', 'success')">
+                                ✓ Authorize Gate Entry
+                            </button>
+                            <a href="id-card.html?mhid=${p.mhid}" target="_blank" class="btn btn-outline-gold btn-sm">View Digital Pass</a>
+                        </div>
+                    </div>
+                `;
+            } catch (err) {
+                console.error("Scan lookup error:", err);
+            }
+        }
+
+        // CSV Export (Requirement 30)
+        function exportParticipantsCSV() {
+            if (allParticipants.length === 0) {
+                showToast("No participant records to export.", "warning");
+                return;
+            }
+
+            const headers = ["MHID", "Full Name", "Email", "Phone", "College Name", "Course", "Year", "College ID", "Category", "Status", "Payment UTR", "Created At"];
+            const rows = allParticipants.map(p => {
+                const pay = (p.payments && p.payments[0]) ? p.payments[0].utr_number : "";
+                return [
+                    `"${p.mhid || ''}"`,
+                    `"${p.name || ''}"`,
+                    `"${p.email || ''}"`,
+                    `"${p.phone || ''}"`,
+                    `"${p.college_name || ''}"`,
+                    `"${p.course || ''}"`,
+                    `"${p.studying_year || ''}"`,
+                    `"${p.college_id || ''}"`,
+                    `"${p.category || ''}"`,
+                    `"${p.status || ''}"`,
+                    `"${pay}"`,
+                    `"${p.created_at || ''}"`
+                ].join(",");
+            });
+
+            const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows].join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Mahotsav2027_Participants_${new Date().toISOString().split("T")[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            showToast("CSV Export downloaded successfully!", "success");
+        }
+
+        // Previous Year Videos Form (Requirement 8)
+        async function loadSettingsInputs() {
+            const vids = await MahotsavService.getPreviousYearVideos();
+            if (vids) {
+                document.getElementById("admin-video-day1").value = vids.day1 || "";
+                document.getElementById("admin-video-day2").value = vids.day2 || "";
+                document.getElementById("admin-video-day3").value = vids.day3 || "";
+            }
+
+            const paySet = await MahotsavService.getPaymentSettings();
+            if (paySet) {
+                document.getElementById("admin-qr-image").value = paySet.qrImage || "";
+                document.getElementById("admin-upi-mobile").value = paySet.upiMobile || "";
+            }
+        }
+
+        document.getElementById("admin-videos-form")?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const day1 = document.getElementById("admin-video-day1").value.trim();
+            const day2 = document.getElementById("admin-video-day2").value.trim();
+            const day3 = document.getElementById("admin-video-day3").value.trim();
+
+            await MahotsavService.savePreviousYearVideos({ day1, day2, day3 });
+            showToast("Previous Year Video URLs saved successfully to Supabase!", "success");
+        });
+
+        document.getElementById("admin-payment-settings-form")?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const qrImage = document.getElementById("admin-qr-image").value.trim();
+            const upiMobile = document.getElementById("admin-upi-mobile").value.trim();
+            const regFee = document.getElementById("admin-fee-culturals").value;
+
+            await MahotsavService.savePaymentSettings({ qrImage, upiMobile, registrationFee: regFee });
+            showToast("Payment Settings updated successfully!", "success");
+        });
+
+        // Broadcast notifications
+        document.getElementById("admin-broadcast-form")?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const title = document.getElementById("notif-title-input").value.trim();
+            const message = document.getElementById("notif-message-input").value.trim();
+            const type = document.getElementById("notif-type-select").value;
+
+            await MahotsavService.sendBroadcastNotification(title, message, type);
+            showToast("Announcement broadcast sent to all participants!", "success");
+            document.getElementById("admin-broadcast-form").reset();
+        });
+
+        document.getElementById("overview-broadcast-form")?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const title = document.getElementById("quick-broadcast-title").value.trim();
+            const message = document.getElementById("quick-broadcast-msg").value.trim();
+
+            await MahotsavService.sendBroadcastNotification(title, message, "info");
+            showToast("Announcement published!", "success");
+            document.getElementById("overview-broadcast-form").reset();
+        });
+
+        async function renderAdminEvents() {
+            const tbody = document.getElementById("admin-events-table-body");
+            if (!tbody) return;
+            const events = await MahotsavService.getAllEvents();
+            tbody.innerHTML = events.map(evt => `
+                <tr>
+                    <td>
+                        <strong style="color: #ffffff;">${evt.title}</strong>
+                        <div style="font-size: 0.75rem; color: var(--color-amber-gold);">${evt.category}</div>
+                    </td>
+                    <td>${evt.venue}</td>
+                    <td>${evt.event_date}</td>
+                    <td><strong style="color: var(--color-amber-bright);">${evt.prize_money}</strong></td>
+                    <td>${evt.min_team_size} - ${evt.max_team_size}</td>
+                    <td><span class="badge-status approved">LIVE</span></td>
+                    <td>
+                        <button class="btn btn-ghost btn-sm" onclick="alert('Editing event: ${evt.title}')">Edit</button>
+                    </td>
+                </tr>
+            `).join("");
+        }
+
+        async function renderAdminVenues() {
+            const tbody = document.getElementById("admin-venues-table-body");
+            if (!tbody) return;
+            const venues = await MahotsavService.getAllVenues();
+            tbody.innerHTML = venues.map(v => `
+                <tr>
+                    <td><strong style="color: #ffffff;">${v.name}</strong></td>
+                    <td>${v.location}</td>
+                    <td>${v.date || '11-13 Feb'}</td>
+                    <td style="font-size: 0.8rem; max-width: 250px;">${v.description}</td>
+                    <td>
+                        <button class="btn btn-ghost btn-sm" onclick="alert('Editing venue: ${v.name}')">Edit</button>
+                    </td>
+                </tr>
+            `).join("");
+        }
+
+        function checkSupabaseStatus() {
+            const pill = document.getElementById("supabase-status-pill");
+            if (!pill) return;
+            if (MahotsavService.isLive) {
+                pill.textContent = "CONNECTED (LIVE REST & AUTH)";
+                pill.className = "badge-status approved";
+            } else {
+                pill.textContent = "LOCAL ACTIVE ENGINE (READY FOR KEYS)";
+                pill.className = "badge-status pending";
+            }
+        }
+
+        function closeModal(id) {
+            document.getElementById(id)?.classList.remove("active");
+        }
+    </script>
+</body>
+</html>

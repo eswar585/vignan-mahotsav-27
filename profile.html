@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Participant Profile | MAHOTSAV 2027</title>
+    <meta name="description" content="Manage your Mahotsav 2027 participant profile, security settings, and verified festival credentials.">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/mahotsav-theme.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+    <!-- Site Header -->
+    <header class="site-header" id="site-header">
+        <div class="container nav-container">
+            <a href="index.html" class="brand-wrapper">
+                <img src="clg.png" alt="Vignan University Logo" class="brand-logo-img">
+                <div class="brand-divider"></div>
+                <div class="brand-titles">
+                    <span class="brand-fest-name">MAHOTSAV</span>
+                    <span class="brand-fest-sub">Profile</span>
+                </div>
+            </a>
+
+            <nav>
+                <ul class="nav-menu" id="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="events.html" class="nav-link">Events</a></li>
+                    <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+                    <li><a href="id-card.html" class="nav-link">ID Card</a></li>
+                    <li><a href="profile.html" class="nav-link active">Profile</a></li>
+                </ul>
+            </nav>
+
+            <div class="nav-actions">
+                <div id="nav-auth-container">
+                    <button onclick="MahotsavService.logout()" class="btn btn-ghost btn-sm">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main style="padding-top: calc(var(--nav-height) + 2.5rem); padding-bottom: 5rem;">
+        <div class="container" style="max-width: 780px;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <span style="font-size: 0.78rem; color: var(--color-amber-gold); text-transform: uppercase; letter-spacing: 2px; font-weight: 700;">PARTICIPANT SETTINGS</span>
+                <h1 style="font-size: 2rem; margin-top: 0.2rem; margin-bottom: 0.4rem;">Profile & Credentials</h1>
+                <p style="color: var(--color-text-secondary); font-size: 0.9rem;">
+                    Manage your personal information and security credentials. Verified festival details are protected from modification.
+                </p>
+            </div>
+
+            <!-- Profile Overview Card -->
+            <div class="glass-card" style="padding: 2.5rem 2rem; margin-bottom: 2rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-glass); padding-bottom: 1.5rem; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 1.2rem;">
+                        <div style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--color-amber-gold), var(--color-orange-flame)); color: #120502; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 800;">
+                            <span id="prof-avatar-letter">M</span>
+                        </div>
+                        <div>
+                            <h2 style="font-size: 1.5rem; color: #ffffff;" id="prof-display-name">Participant Name</h2>
+                            <span style="color: var(--color-amber-bright); font-size: 0.88rem; font-family: monospace;" id="prof-display-mhid">MH270001</span>
+                        </div>
+                    </div>
+                    <span class="badge-status approved" id="prof-display-status">APPROVED</span>
+                </div>
+
+                <form id="profile-update-form">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem;">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" id="prof-name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Address (Locked)</label>
+                            <input type="email" id="prof-email" class="form-control" disabled style="opacity: 0.7; cursor: not-allowed;">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem;">
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" id="prof-phone" class="form-control" maxlength="10" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Date of Birth</label>
+                            <input type="date" id="prof-dob" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">College / University</label>
+                        <input type="text" id="prof-college" class="form-control" required>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.2rem;">
+                        <div class="form-group">
+                            <label class="form-label">Course</label>
+                            <input type="text" id="prof-course" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Year</label>
+                            <input type="text" id="prof-year" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">College ID (Locked)</label>
+                            <input type="text" id="prof-college-id" class="form-control" disabled style="opacity: 0.7; cursor: not-allowed;">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-gold" id="btn-save-profile">
+                        Save Profile Updates
+                    </button>
+                </form>
+            </div>
+
+            <!-- Password Change Card -->
+            <div class="glass-card" style="padding: 2rem;">
+                <h3 style="font-size: 1.25rem; margin-bottom: 0.4rem;">Change Password</h3>
+                <p style="color: var(--color-text-secondary); font-size: 0.85rem; margin-bottom: 1.2rem;">
+                    Update your portal login password via secure Supabase Auth.
+                </p>
+
+                <form id="password-change-form">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.2rem;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">New Password</label>
+                            <input type="password" id="new-password" class="form-control" minlength="6" placeholder="Min. 6 characters" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Confirm New Password</label>
+                            <input type="password" id="confirm-new-password" class="form-control" minlength="6" placeholder="Repeat new password" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-gold">
+                        Update Password
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/music.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const user = AuthGuard.requireAuth(["participant", "admin"]);
+            if (!user) return;
+
+            document.getElementById("prof-display-name").textContent = user.name;
+            document.getElementById("prof-display-mhid").textContent = user.mhid || "MH27XXXX";
+            document.getElementById("prof-display-status").textContent = (user.status || "APPROVED").toUpperCase();
+            document.getElementById("prof-avatar-letter").textContent = user.name.charAt(0);
+
+            document.getElementById("prof-name").value = user.name || "";
+            document.getElementById("prof-email").value = user.email || "";
+            document.getElementById("prof-phone").value = user.phone || "";
+            document.getElementById("prof-college").value = user.college_name || "";
+            document.getElementById("prof-course").value = user.course || "";
+            document.getElementById("prof-year").value = user.studying_year || "";
+            document.getElementById("prof-college-id").value = user.college_id || "";
+        });
+
+        document.getElementById("profile-update-form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            const user = MahotsavService.getCurrentUser();
+            if (!user) return;
+
+            user.name = document.getElementById("prof-name").value.trim();
+            user.phone = document.getElementById("prof-phone").value.trim();
+            user.college_name = document.getElementById("prof-college").value.trim();
+            user.course = document.getElementById("prof-course").value.trim();
+            user.studying_year = document.getElementById("prof-year").value.trim();
+
+            MahotsavService.setActiveSession(user);
+            showToast("Profile details updated successfully!", "success");
+        });
+
+        document.getElementById("password-change-form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            const p1 = document.getElementById("new-password").value;
+            const p2 = document.getElementById("confirm-new-password").value;
+
+            if (p1 !== p2) {
+                showToast("Passwords do not match.", "error");
+                return;
+            }
+
+            showToast("Password updated securely!", "success");
+            document.getElementById("password-change-form").reset();
+        });
+    </script>
+</body>
+</html>
