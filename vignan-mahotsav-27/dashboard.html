@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Participant Dashboard | MAHOTSAV 2027</title>
+    <meta name="description" content="Participant portal for Mahotsav 2027. Access digital pass barcode, registered events, and festival notifications.">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/mahotsav-theme.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+    <!-- Site Header -->
+    <header class="site-header" id="site-header">
+        <div class="container nav-container">
+            <a href="index.html" class="brand-wrapper">
+                <img src="clg.png" alt="Vignan University Logo" class="brand-logo-img">
+                <div class="brand-divider"></div>
+                <div class="brand-titles">
+                    <span class="brand-fest-name">MAHOTSAV</span>
+                    <span class="brand-fest-sub">Dashboard</span>
+                </div>
+            </a>
+
+            <nav>
+                <ul class="nav-menu" id="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="events.html" class="nav-link">Events</a></li>
+                    <li><a href="dashboard.html" class="nav-link active">Dashboard</a></li>
+                    <li><a href="id-card.html" class="nav-link">My ID Card</a></li>
+                    <li><a href="profile.html" class="nav-link">Profile</a></li>
+                </ul>
+            </nav>
+
+            <div class="nav-actions">
+                <div id="nav-auth-container">
+                    <button onclick="MahotsavService.logout()" class="btn btn-ghost btn-sm">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main style="padding-top: calc(var(--nav-height) + 2rem); padding-bottom: 5rem;">
+        <div class="container">
+            <!-- Hero Participant Card with Barcode -->
+            <div class="glass-card" style="margin-bottom: 2rem; padding: 2.2rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;">
+                    <!-- Left: Profile identity -->
+                    <div style="display: flex; align-items: center; gap: 1.5rem;">
+                        <div style="width: 76px; height: 76px; border-radius: 50%; background: linear-gradient(135deg, var(--color-amber-gold), var(--color-orange-flame)); color: #120502; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: 800; border: 2px solid var(--color-amber-bright); box-shadow: var(--glow-amber);">
+                            <span id="dash-avatar-letter">M</span>
+                        </div>
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem;">
+                                <h1 style="font-size: 1.8rem; color: #ffffff;" id="dash-user-name">Loading...</h1>
+                                <span class="badge-status approved" id="dash-status-badge">APPROVED</span>
+                            </div>
+                            <p style="color: var(--color-text-secondary); font-size: 0.95rem; margin-bottom: 0.4rem;" id="dash-college-meta">
+                                Loading academic details...
+                            </p>
+                            <div style="display: flex; align-items: center; gap: 1rem; font-size: 0.85rem; color: var(--color-amber-gold);">
+                                <span>College ID: <strong style="color: #ffffff;" id="dash-college-id">-</strong></span>
+                                <span>•</span>
+                                <span>Category: <strong style="color: #ffffff;" id="dash-category">Culturals</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Fast Action Buttons & Barcode -->
+                    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 1rem;">
+                        <!-- Unique Barcode Widget -->
+                        <div style="background: #ffffff; padding: 6px 14px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 6px 18px rgba(0,0,0,0.5);">
+                            <svg id="dash-barcode-svg" style="height: 48px; max-width: 220px;"></svg>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                            <a href="id-card.html" class="btn btn-gold btn-sm pulse-glow">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line></svg>
+                                Digital ID Card
+                            </a>
+                            <a href="events.html" class="btn btn-outline-gold btn-sm">
+                                Register for Events &rarr;
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard 2-Column Grid -->
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;" class="dashboard-grid">
+                <!-- Left: My Registered Events -->
+                <div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem;">
+                        <h2 style="font-size: 1.4rem;">My Registered Events</h2>
+                        <a href="events.html" class="btn btn-ghost btn-sm" style="color: var(--color-amber-bright);">+ Add More Events</a>
+                    </div>
+
+                    <div id="dash-events-list">
+                        <!-- Populated dynamically -->
+                        <div class="glass-card" style="padding: 2rem; text-align: center; color: var(--color-text-dim);">
+                            <p style="margin-bottom: 1rem;">Loading your registered events...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Notifications & Payment Receipt -->
+                <div style="display: flex; flex-direction: column; gap: 1.8rem;">
+                    <!-- Payment Status Card -->
+                    <div class="glass-card" style="padding: 1.5rem;">
+                        <span style="font-size: 0.72rem; color: var(--color-amber-gold); text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">VERIFIED PAYMENT</span>
+                        <h3 style="font-size: 1.15rem; color: #ffffff; margin-top: 0.3rem; margin-bottom: 1rem;">Registration Fee</h3>
+
+                        <div style="display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.85rem;">
+                            <div style="display: flex; justify-content: space-between; color: var(--color-text-secondary);">
+                                <span>Status:</span>
+                                <span class="badge-status approved" style="padding: 0.15rem 0.55rem; font-size: 0.72rem;">VERIFIED</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; color: var(--color-text-secondary);">
+                                <span>Amount:</span>
+                                <strong style="color: var(--color-amber-bright);" id="dash-payment-amount">₹ 250</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; color: var(--color-text-secondary);">
+                                <span>UTR Reference:</span>
+                                <span style="font-family: monospace; color: #ffffff;" id="dash-payment-utr">Loading...</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; color: var(--color-text-secondary);">
+                                <span>Payment Date:</span>
+                                <span id="dash-payment-date">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Notifications Card -->
+                    <div class="glass-card" style="padding: 1.5rem;">
+                        <span style="font-size: 0.72rem; color: var(--color-amber-gold); text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">ANNOUNCEMENTS</span>
+                        <h3 style="font-size: 1.15rem; color: #ffffff; margin-top: 0.3rem; margin-bottom: 1rem;">Fest Updates</h3>
+
+                        <div id="dash-notifications-list" style="display: flex; flex-direction: column; gap: 0.8rem;">
+                            <!-- Populated dynamically -->
+                            <div style="font-size: 0.85rem; color: var(--color-text-dim);">Loading notifications...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/music.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const user = AuthGuard.requireAuth(["participant", "admin"]);
+            if (!user) return;
+
+            // Populate User Header
+            document.getElementById("dash-user-name").textContent = user.name;
+            document.getElementById("dash-avatar-letter").textContent = user.name.charAt(0);
+            document.getElementById("dash-college-meta").textContent = `${user.college_name} • ${user.course} (${user.studying_year})`;
+            document.getElementById("dash-college-id").textContent = user.college_id;
+            document.getElementById("dash-category").textContent = user.category || "Culturals";
+
+            // Render Barcode using JsBarcode
+            const barcodeSvg = document.getElementById("dash-barcode-svg");
+            const barcodeVal = user.mhid || `MH27${user.id.slice(-6).toUpperCase()}`;
+            if (barcodeSvg && window.JsBarcode) {
+                try {
+                    window.JsBarcode(barcodeSvg, barcodeVal, {
+                        format: "CODE128",
+                        lineColor: "#140704",
+                        width: 1.8,
+                        height: 40,
+                        displayValue: true,
+                        fontSize: 12,
+                        textMargin: 2
+                    });
+                } catch (e) {
+                    console.error("Barcode render error:", e);
+                }
+            }
+
+            // Load Registered Events
+            try {
+                const regs = await MahotsavService.getParticipantEvents(user.id);
+                const eventsListEl = document.getElementById("dash-events-list");
+                if (regs && regs.length > 0) {
+                    eventsListEl.innerHTML = regs.map(r => {
+                        const evt = r.events || {};
+                        return `
+                            <div class="glass-card" style="padding: 1.25rem 1.5rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                                <div>
+                                    <span class="event-category-badge" style="position: static; display: inline-block; margin-bottom: 0.3rem;">${evt.category || 'Event'}</span>
+                                    <h3 style="font-size: 1.2rem; color: #ffffff; margin-bottom: 0.2rem;">${evt.title || 'Event Registration'}</h3>
+                                    <div style="font-size: 0.82rem; color: var(--color-text-muted); display: flex; gap: 1rem; flex-wrap: wrap;">
+                                        <span>📅 ${evt.event_date || '11-13 Feb'} at ${evt.event_time || 'TBD'}</span>
+                                        <span>📍 ${evt.venue || 'Campus Arena'}</span>
+                                        ${r.team_name ? `<span>👥 Team: <strong>${r.team_name}</strong></span>` : ''}
+                                    </div>
+                                </div>
+                                <span class="badge-status approved" style="padding: 0.3rem 0.8rem;">CONFIRMED</span>
+                            </div>
+                        `;
+                    }).join("");
+                } else {
+                    eventsListEl.innerHTML = `
+                        <div class="glass-card" style="padding: 3rem 1.5rem; text-align: center;">
+                            <div style="font-size: 2.2rem; margin-bottom: 0.6rem;">🎪</div>
+                            <h3 style="font-size: 1.2rem; margin-bottom: 0.4rem;">No Events Registered Yet</h3>
+                            <p style="color: var(--color-text-secondary); font-size: 0.9rem; max-width: 450px; margin: 0 auto 1.5rem auto;">
+                                As an approved Mahotsav participant, you can register for solo and team competitions across Culturals and Sports!
+                            </p>
+                            <a href="events.html" class="btn btn-gold btn-sm">Explore and Register for Events &rarr;</a>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                console.warn("Error fetching participant events:", err);
+            }
+
+            // Load Payment Details
+            try {
+                const statusData = await MahotsavService.getParticipantStatus(user.email);
+                const payment = (statusData && statusData.payments && statusData.payments.length > 0) ? statusData.payments[0] : null;
+                if (payment) {
+                    document.getElementById("dash-payment-amount").textContent = `₹ ${payment.amount}`;
+                    document.getElementById("dash-payment-utr").textContent = payment.utr_number;
+                    document.getElementById("dash-payment-date").textContent = payment.payment_date;
+                }
+            } catch (e) {}
+
+            // Load Notifications
+            try {
+                const notifs = await MahotsavService.getNotifications(user.id);
+                const notifListEl = document.getElementById("dash-notifications-list");
+                if (notifs && notifs.length > 0) {
+                    notifListEl.innerHTML = notifs.slice(0, 4).map(n => `
+                        <div style="background: rgba(18, 7, 4, 0.6); border-left: 3px solid var(--color-amber-gold); padding: 0.75rem 0.9rem; border-radius: 4px;">
+                            <strong style="color: #ffffff; font-size: 0.85rem; display: block; margin-bottom: 0.15rem;">${n.title}</strong>
+                            <p style="color: var(--color-text-secondary); font-size: 0.78rem; line-height: 1.4; margin: 0;">${n.message}</p>
+                        </div>
+                    `).join("");
+                } else {
+                    notifListEl.innerHTML = `<span style="font-size: 0.85rem; color: var(--color-text-dim);">No new notifications.</span>`;
+                }
+            } catch (e) {}
+        });
+    </script>
+</body>
+</html>

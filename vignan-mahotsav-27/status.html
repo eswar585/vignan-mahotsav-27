@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Status & MHID Verification | MAHOTSAV 2027</title>
+    <meta name="description" content="Check your Mahotsav 2027 registration and payment verification status using your Email, Phone Number, College ID, or MHID.">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/mahotsav-theme.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+    <!-- Site Header -->
+    <header class="site-header" id="site-header">
+        <div class="container nav-container">
+            <a href="index.html" class="brand-wrapper">
+                <img src="clg.png" alt="Vignan University Logo" class="brand-logo-img">
+                <div class="brand-divider"></div>
+                <div class="brand-titles">
+                    <span class="brand-fest-name">MAHOTSAV</span>
+                    <span class="brand-fest-sub">Status Portal</span>
+                </div>
+            </a>
+
+            <nav>
+                <ul class="nav-menu" id="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="events.html" class="nav-link">Events</a></li>
+                    <li><a href="register.html" class="nav-link">Register</a></li>
+                    <li><a href="status.html" class="nav-link active">Check Status</a></li>
+                </ul>
+            </nav>
+
+            <div class="nav-actions">
+                <div id="nav-auth-container">
+                    <a href="login.html" class="btn btn-ghost btn-sm">Login</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main style="padding-top: calc(var(--nav-height) + 2.5rem); padding-bottom: 5rem;">
+        <div class="container" style="max-width: 800px;">
+            <!-- Page Header -->
+            <div style="text-align: center; margin-bottom: 2.5rem;">
+                <span style="font-size: 0.8rem; color: var(--color-amber-gold); text-transform: uppercase; letter-spacing: 2px; font-weight: 700;">LIVE APPLICATION TRACKING</span>
+                <h1 style="font-size: 2.2rem; margin-top: 0.3rem; margin-bottom: 0.6rem;">Registration & MHID Status</h1>
+                <p style="color: var(--color-text-secondary); font-size: 0.95rem;">
+                    Enter your Registered Email, Phone Number, College ID, or MHID to check your approval and payment verification status.
+                </p>
+            </div>
+
+            <!-- Search Lookup Box -->
+            <div class="glass-card" style="padding: 1.5rem; margin-bottom: 2rem;">
+                <form id="status-search-form" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                    <input type="text" id="search-input" class="form-control" placeholder="Enter Email, Phone (10 digits), College ID, or MHID..." style="flex-grow: 1; min-width: 260px;" required>
+                    <button type="submit" class="btn btn-gold" id="btn-search-status">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        Track Status
+                    </button>
+                </form>
+            </div>
+
+            <!-- Dynamic Result Card -->
+            <div id="status-result-area">
+                <!-- Injected via JavaScript -->
+                <div class="glass-card" style="text-align: center; padding: 3rem 1.5rem; color: var(--color-text-dim);">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 1rem; opacity: 0.6;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <p style="font-size: 1rem; color: var(--color-text-secondary);">Enter your credentials above to view your registration status.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/music.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryParam = urlParams.get("query") || urlParams.get("mhid") || urlParams.get("id");
+
+            if (queryParam) {
+                document.getElementById("search-input").value = queryParam;
+                executeSearch(queryParam);
+            }
+        });
+
+        document.getElementById("status-search-form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            const query = document.getElementById("search-input").value.trim();
+            if (query) {
+                executeSearch(query);
+            }
+        });
+
+        async function executeSearch(query) {
+            const resultArea = document.getElementById("status-result-area");
+            const btn = document.getElementById("btn-search-status");
+
+            btn.disabled = true;
+            resultArea.innerHTML = `
+                <div class="glass-card" style="text-align: center; padding: 3rem 1.5rem;">
+                    <div style="font-size: 1.2rem; color: var(--color-amber-gold); margin-bottom: 0.5rem;">Searching Records...</div>
+                    <p style="color: var(--color-text-secondary); font-size: 0.9rem;">Connecting to Mahotsav database</p>
+                </div>
+            `;
+
+            try {
+                const participant = await MahotsavService.getParticipantStatus(query);
+                btn.disabled = false;
+
+                if (!participant) {
+                    resultArea.innerHTML = `
+                        <div class="glass-card" style="text-align: center; padding: 3rem 1.5rem; border-color: rgba(239, 68, 68, 0.4);">
+                            <div style="font-size: 2.5rem; margin-bottom: 0.8rem;">🔍</div>
+                            <h3 style="font-size: 1.3rem; color: #f87171; margin-bottom: 0.5rem;">No Registration Found</h3>
+                            <p style="color: var(--color-text-secondary); font-size: 0.9rem; max-width: 480px; margin: 0 auto 1.5rem auto;">
+                                We could not locate any active record matching "<strong>${query}</strong>". Please verify your email or phone number.
+                            </p>
+                            <a href="register.html" class="btn btn-gold btn-sm">Register as New Participant &rarr;</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Render based on status
+                renderParticipantStatusCard(participant);
+            } catch (err) {
+                console.error("Status lookup error:", err);
+                btn.disabled = false;
+                resultArea.innerHTML = `
+                    <div class="glass-card" style="text-align: center; padding: 2.5rem 1.5rem;">
+                        <h3 style="color: #ef4444; margin-bottom: 0.5rem;">Error Searching Records</h3>
+                        <p style="color: var(--color-text-secondary); font-size: 0.9rem;">${err.message || 'Please check your connection and try again.'}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderParticipantStatusCard(p) {
+            const resultArea = document.getElementById("status-result-area");
+            const payment = (p.payments && p.payments.length > 0) ? p.payments[0] : null;
+
+            if (p.status === "approved") {
+                resultArea.innerHTML = `
+                    <div class="glass-card" style="border-color: #22c55e; box-shadow: 0 15px 35px rgba(34, 197, 94, 0.2);">
+                        <div style="display: flex; align-items: flex-start; justify-content: space-between; border-bottom: 1px solid var(--border-glass); padding-bottom: 1.25rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                            <div>
+                                <span class="badge-status approved" style="margin-bottom: 0.5rem;">APPROVED</span>
+                                <h2 style="font-size: 1.8rem; color: #ffffff; margin-bottom: 0.2rem;">${p.name}</h2>
+                                <span style="color: var(--color-text-secondary); font-size: 0.9rem;">${p.college_name} • ${p.course} (${p.studying_year})</span>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="font-size: 0.72rem; color: var(--color-text-dim); text-transform: uppercase;">MAHOTSAV ID</span>
+                                <div style="font-family: var(--font-accent); font-size: 1.6rem; font-weight: 800; color: var(--color-amber-bright); letter-spacing: 1px;">
+                                    ${p.mhid}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Success message -->
+                        <div style="background: rgba(34, 197, 94, 0.12); border-left: 3px solid #22c55e; padding: 1rem 1.25rem; border-radius: 4px; margin-bottom: 1.8rem;">
+                            <strong style="color: #4ade80; display: block; font-size: 0.95rem; margin-bottom: 0.2rem;">Registration and Payment Verified! 🎉</strong>
+                            <p style="color: var(--color-text-secondary); font-size: 0.88rem; margin: 0;">
+                                Your registration has been approved. Your official digital ID card with secure barcode has been generated. You now have full access to register for any of our 90+ national events.
+                            </p>
+                        </div>
+
+                        <!-- Participant Quick Details -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; background: rgba(18, 7, 4, 0.6); padding: 1.2rem; border-radius: var(--radius-md);">
+                            <div>
+                                <span style="font-size: 0.75rem; color: var(--color-text-dim);">College ID:</span>
+                                <strong style="display: block; color: #ffffff; font-size: 0.9rem;">${p.college_id}</strong>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.75rem; color: var(--color-text-dim);">Category:</span>
+                                <strong style="display: block; color: var(--color-amber-gold); font-size: 0.9rem;">${p.category || 'Culturals'}</strong>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.75rem; color: var(--color-text-dim);">Payment UTR:</span>
+                                <strong style="display: block; color: #ffffff; font-size: 0.9rem; font-family: monospace;">${payment?.utr_number || 'Verified'}</strong>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.75rem; color: var(--color-text-dim);">Registered Phone:</span>
+                                <strong style="display: block; color: #ffffff; font-size: 0.9rem;">${p.phone}</strong>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <a href="id-card.html?mhid=${p.mhid}" class="btn btn-gold btn-lg pulse-glow" style="flex: 1; min-width: 220px;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line></svg>
+                                View & Download ID Card
+                            </a>
+                            <a href="events.html" class="btn btn-outline-gold btn-lg" style="flex: 1; min-width: 200px;">
+                                Register for Events &rarr;
+                            </a>
+                            <a href="login.html" class="btn btn-ghost btn-lg">
+                                Login to Portal
+                            </a>
+                        </div>
+                    </div>
+                `;
+            } else if (p.status === "declined") {
+                resultArea.innerHTML = `
+                    <div class="glass-card" style="border-color: #ef4444;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                            <span class="badge-status declined">REGISTRATION DECLINED</span>
+                            <span style="color: var(--color-text-dim); font-size: 0.85rem;">Applicant: <strong>${p.name}</strong></span>
+                        </div>
+                        <h2 style="font-size: 1.5rem; color: #f87171; margin-bottom: 0.8rem;">Application Needs Review</h2>
+                        <div style="background: rgba(239, 68, 68, 0.12); border-left: 3px solid #ef4444; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem;">
+                            <strong style="color: #f87171; display: block; font-size: 0.9rem;">Reason provided by Administrator:</strong>
+                            <p style="color: #ffffff; font-size: 0.92rem; margin-top: 0.3rem;">${p.decline_reason || "Payment reference / UTR could not be verified in university bank records, or invalid college credentials provided."}</p>
+                        </div>
+                        <p style="color: var(--color-text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;">
+                            To resolve this issue or submit correct payment proof, please contact the student and faculty conveners with your transaction details:
+                        </p>
+                        <div style="background: rgba(18, 7, 4, 0.6); padding: 1rem 1.25rem; border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+                            <div>
+                                <span style="font-size: 0.8rem; color: var(--color-text-dim);">Fest Helpline:</span>
+                                <strong style="display: block; color: var(--color-amber-bright);">90320 80405 / 62815 11563</strong>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.8rem; color: var(--color-text-dim);">Email:</span>
+                                <strong style="display: block; color: #ffffff;">mahotsav@vignan.ac.in</strong>
+                            </div>
+                        </div>
+                        <a href="payment.html?id=${p.id}&category=${encodeURIComponent(p.category || 'Culturals')}" class="btn btn-gold btn-sm">Resubmit Payment Verification &rarr;</a>
+                    </div>
+                `;
+            } else {
+                // Pending
+                resultArea.innerHTML = `
+                    <div class="glass-card" style="border-color: var(--color-amber-gold);">
+                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                            <span class="badge-status pending">PENDING VERIFICATION</span>
+                            <span style="color: var(--color-text-dim); font-size: 0.85rem;">Applicant: <strong>${p.name}</strong></span>
+                        </div>
+                        <h2 style="font-size: 1.6rem; color: #ffffff; margin-bottom: 0.6rem;">Registration & Payment Awaiting Approval</h2>
+                        <p style="color: var(--color-text-secondary); font-size: 0.92rem; line-height: 1.6; margin-bottom: 1.8rem;">
+                            Your registration and payment details have been safely received by our portal. Our finance and verification committee is currently cross-checking your transaction UTR with bank records.
+                        </p>
+
+                        <!-- Timeline -->
+                        <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; background: rgba(18, 7, 4, 0.6); padding: 1.5rem; border-radius: var(--radius-md);">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <span style="width: 26px; height: 26px; border-radius: 50%; background: #22c55e; color: #120502; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.75rem;">✓</span>
+                                <span style="color: #ffffff; font-size: 0.9rem; font-weight: 600;">Personal Details Submitted</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <span style="width: 26px; height: 26px; border-radius: 50%; background: ${payment ? '#22c55e' : 'var(--color-amber-gold)'}; color: #120502; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.75rem;">${payment ? '✓' : '2'}</span>
+                                <span style="color: #ffffff; font-size: 0.9rem; font-weight: 600;">
+                                    ${payment ? `Payment Received (UTR: ${payment.utr_number})` : 'Payment Submission Pending'}
+                                </span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <span style="width: 26px; height: 26px; border-radius: 50%; background: var(--color-amber-gold); color: #120502; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.75rem;">3</span>
+                                <span style="color: var(--color-amber-bright); font-size: 0.9rem; font-weight: 700;">Admin Verification & MHID Generation (In Progress)</span>
+                            </div>
+                        </div>
+
+                        ${!payment ? `
+                            <a href="payment.html?id=${p.id}&category=${encodeURIComponent(p.category || 'Culturals')}" class="btn btn-gold btn-block">
+                                Complete Payment Step &rarr;
+                            </a>
+                        ` : `
+                            <p style="font-size: 0.85rem; color: var(--color-text-dim); text-align: center; margin: 0;">
+                                Please check back in a short while or refresh this page. You will receive an approval notification once verified.
+                            </p>
+                        `}
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

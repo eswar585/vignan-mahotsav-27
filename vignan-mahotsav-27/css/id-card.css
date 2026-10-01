@@ -1,0 +1,292 @@
+/**
+ * MAHOTSAV 2027 — DIGITAL PARTICIPANT ID CARD & LANYARD BADGE STYLES
+ */
+
+.id-card-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+/* Lanyard Slot at Top */
+.badge-lanyard-slot {
+    width: 60px;
+    height: 12px;
+    background: #000000;
+    border: 2px solid rgba(245, 158, 11, 0.4);
+    border-radius: 6px;
+    margin: 0 auto 10px auto;
+}
+
+/* The Main ID Pass Card (Physical Laminate Dimension) */
+.mahotsav-pass-card {
+    width: 380px;
+    min-height: 620px;
+    background: linear-gradient(165deg, #1b0a05 0%, #100503 55%, #1d0b06 100%);
+    border: 2px solid var(--color-amber-bright);
+    border-radius: 20px;
+    padding: 1.8rem 1.6rem;
+    position: relative;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 30px rgba(245, 158, 11, 0.35);
+    overflow: hidden;
+    color: #ffffff;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+/* Holographic Rainbow Foil Shimmer Effect */
+.mahotsav-pass-card::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent 35%,
+        rgba(255, 255, 255, 0.04) 45%,
+        rgba(245, 158, 11, 0.08) 50%,
+        rgba(6, 182, 212, 0.06) 55%,
+        transparent 65%
+    );
+    pointer-events: none;
+    transform: rotate(35deg);
+}
+
+/* Watermark Background */
+.id-card-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 260px;
+    height: 260px;
+    background: url('../clg.png') center / contain no-repeat;
+    opacity: 0.06;
+    pointer-events: none;
+}
+
+/* Card Header */
+.id-card-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px dashed rgba(245, 158, 11, 0.35);
+}
+
+.id-card-clg-logo {
+    height: 38px;
+    width: auto;
+    object-fit: contain;
+    margin-bottom: 0.4rem;
+}
+
+.id-card-clg-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin-bottom: 0.2rem;
+}
+
+.id-card-fest-brand {
+    font-family: 'Shojumaru', 'Cinzel Decorative', cursive;
+    font-size: 1.6rem;
+    color: var(--color-amber-bright);
+    letter-spacing: 3px;
+    line-height: 1.1;
+    text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}
+
+.id-card-edition-tag {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--color-amber-light);
+    font-weight: 700;
+}
+
+/* Photo and Core Identity */
+.id-card-hero-block {
+    display: flex;
+    gap: 1.2rem;
+    align-items: center;
+    margin-top: 1.2rem;
+    margin-bottom: 1.2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.id-card-photo-box {
+    width: 90px;
+    height: 110px;
+    background: #250f08;
+    border: 2px solid var(--color-amber-bright);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.6);
+}
+
+.id-card-photo-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.id-avatar-initial {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: var(--color-amber-gold);
+}
+
+.id-card-primary-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.id-card-name-title {
+    font-family: var(--font-accent);
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.2;
+    margin-bottom: 0.35rem;
+}
+
+.id-mhid-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--color-amber-gold), var(--color-orange-flame));
+    color: #120502;
+    font-family: var(--font-accent);
+    font-size: 0.95rem;
+    font-weight: 800;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-sm);
+    letter-spacing: 1px;
+    margin-bottom: 0.4rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    width: fit-content;
+}
+
+.id-card-category-ribbon {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #38bdf8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Detailed Metadata Grid */
+.id-card-details-grid {
+    background: rgba(35, 15, 9, 0.65);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 12px;
+    padding: 0.9rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    margin-bottom: 1.2rem;
+    font-size: 0.78rem;
+    position: relative;
+    z-index: 2;
+}
+
+.id-detail-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.id-detail-item.col-span-2 {
+    grid-column: span 2;
+}
+
+.id-detail-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    color: var(--color-amber-gold);
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.id-detail-value {
+    color: #ffffff;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Security Barcode & QR Footer */
+.id-card-bottom-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 0.6rem 0.8rem;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+.id-barcode-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.id-barcode-box svg {
+    max-width: 220px;
+    height: 48px;
+}
+
+.id-qr-box {
+    width: 65px;
+    height: 65px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.id-qr-box img, .id-qr-box canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Print Rules */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    .mahotsav-pass-card, .mahotsav-pass-card * {
+        visibility: visible;
+    }
+    .mahotsav-pass-card {
+        position: absolute;
+        left: 50%;
+        top: 20px;
+        transform: translateX(-50%);
+        box-shadow: none;
+        border-color: #000000;
+        color: #000000;
+        background: #ffffff !important;
+    }
+    .site-header, .site-footer, .music-widget, .btn {
+        display: none !important;
+    }
+}
